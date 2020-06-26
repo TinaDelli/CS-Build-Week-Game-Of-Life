@@ -7,7 +7,7 @@ function App() {
   //***** STATES *****
 
   //Rows
-  const [gridRows, setGridRows] = useState({ rows: 25 });
+  const [gridRows, setGridRows] = useState({grows: 25});
   //Columns
   const [gridCols, setGridCols] = useState({ columns: 25 });
   //Locations to check cells
@@ -29,6 +29,10 @@ function App() {
   const [canClick, setCanClick] = useState(true);
   //State to monitor if starting or stopping simulation
   const [running, setRunning] = useState(false);
+  //Color
+  const [cellColor, setCellColor] = useState({color: "red"});
+  //Cell size
+  const [cellSize, setCellSize] = useState(20);
 
   //***** HANDLERS *****
 
@@ -44,6 +48,14 @@ function App() {
   const handleRows = (e) => {
     setGridRows({ ...gridRows, [e.target.name]: e.target.value });
   };
+  //handles user inputted cell color
+  const handleColor = (e) => {
+    setCellColor({ ...cellColor, [e.target.name]: e.target.value });
+  };
+  //handles user inputted cell size
+  const handleSize = (e) => {
+    setCellSize({ ...cellSize, [e.target.name]: e.target.value });
+  };
   //handles form button submit
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -53,7 +65,7 @@ function App() {
   //logic to clear out grid
   const generateEmptyGrid = () => {
     const rows = [];
-    for (let i = 0; i < gridRows.rows; i++) {
+    for (let i = 0; i < gridRows.grows; i++) {
       rows.push(Array.from(Array(gridCols.columns), () => 0));
     }
     return rows;
@@ -62,7 +74,7 @@ function App() {
   //logic to randomize grid
   const generateRandomGrid = () => {
     const rows = [];
-    for (let i = 0; i < gridRows.rows; i++) {
+    for (let i = 0; i < gridRows.grows; i++) {
       rows.push(
         Array.from(Array(gridCols.columns), () => (Math.random() > 0.5 ? 1 : 0))
       );
@@ -88,7 +100,7 @@ function App() {
       //g will be current value of our grid
       return produce(g, (gridCopy) => {
         //double for loop will check all our cells on grid
-        for (let i = 0; i < gridRows.rows; i++) {
+        for (let i = 0; i < gridRows.grows; i++) {
           for (let j = 0; j < gridCols.columns; j++) {
             //compute the number of neighbors that each cell has and determine what to do with it
             let neighbors = 0;
@@ -101,7 +113,7 @@ function App() {
               const newJ = j + y;
               if (
                 newI >= 0 &&
-                newI < gridRows.rows &&
+                newI < gridRows.grows &&
                 newJ >= 0 &&
                 newJ < gridCols.columns
               ) {
@@ -130,7 +142,7 @@ function App() {
   const [grid, setGrid] = useState(() => {
     return generateEmptyGrid(); //to clear our grid
   });
-
+  
   return (
     <>
       <Header>Conway's Game of Life</Header>
@@ -153,8 +165,8 @@ function App() {
             <label htmlFor="rows">Edit the Rows of the Grid:</label>
             <input
               placeholder="Enter rows"
-              name="rows"
-              value={gridRows.rows}
+              name="grows"
+              value={gridRows.grows}
               onChange={handleRows}
             ></input>
             <label htmlFor="columns">Edit the Columns of the Grid:</label>
@@ -163,6 +175,13 @@ function App() {
               name="columns"
               value={gridCols.columns}
               onChange={handleCols}
+            ></input>
+            <label htmlFor="color">Edit the Color of the Cells:</label>
+            <input
+              placeholder="Enter color"
+              name="color"
+              value={cellColor.color}
+              onChange={handleColor}
             ></input>
             <button>Submit</button>
           </form>
@@ -222,9 +241,9 @@ function App() {
                     setGrid(newGrid);
                   }}
                   style={{
-                    width: 20,
-                    height: 20,
-                    backgroundColor: grid[i][j] ? "red" : undefined,
+                    width: cellSize,
+                    height: cellSize,
+                    backgroundColor: grid[i][j] ? cellColor.color : undefined,
                     border: "solid 1px black",
                     pointerEvents: canClick ? "initial" : "none",
                   }}
